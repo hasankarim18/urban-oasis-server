@@ -46,7 +46,7 @@ async function run() {
 
     app.get('/totalProducts', async (req, res)=> {
       const result = await productCollection.estimatedDocumentCount()
-    res.send({totalProducts: result})
+    res.send({ totalProducts: result });
     } )
 
 
