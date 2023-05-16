@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors')
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express()
 require("dotenv").config();
 const port = process.env.PORT || 5000 
@@ -41,7 +41,7 @@ async function run() {
 
     app.get('/products', async (req, res)=> {
         const query = req.query 
-        console.log(query);
+        
         const page = parseInt(req.query.page) || 0;
         const limit = parseInt(req.query.limit) || 10 
         const skip = (page * limit)
@@ -52,6 +52,27 @@ async function run() {
     app.get('/totalProducts', async (req, res)=> {
       const result = await productCollection.estimatedDocumentCount()
     res.send({ totalProducts: result });
+    } )
+
+    app.post('/productsById', async (req, res)=> {
+      const ids = req.body;     
+       
+   
+      try {      
+         
+         const objectIds = ids.map(id =>new ObjectId(id))
+          const query = { _id: { $in: objectIds } };
+         const result = await productCollection.find(query).toArray();
+         res.send(result);
+      } catch (err) {
+        console.error(err); // log the error to the console for debugging
+        res.status(500).json({ error: "Internal server error" }); // send a 500 error response to the client
+      }  
+      
+      // console.log(ids)
+
+
+
     } )
 
 
